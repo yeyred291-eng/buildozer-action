@@ -10,6 +10,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Android Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsqlite3-dev lld cmake auto-apt-proxy unzip
+          pip install --upgrade pip
+          pip install "cython<3.0" buildozer
+
+      - name: Automatically Accept Android SDK Licenses
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
+          # Hier wird Google automatisch "Ja" gesagt, damit aidl geladen werden darf:
+          yes | buildozer android p4a -- get-licenses || true
+
       - name: Build APK using Brian's Action
         uses: yeyred291-eng/buildozer-action@main
         with:
