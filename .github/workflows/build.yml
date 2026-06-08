@@ -24,8 +24,8 @@ jobs:
 
     - name: Install Android SDK Tools (Aidl Fix)
       run: |
-        # Wir installieren die SDK-Plattform-Tools, in denen aidl enthalten ist
-        sdkmanager --sdk_root=$ANDROID_HOME "build-tools;33.0.0" "platform-tools" "platforms;android-33"
+        # Wir nutzen den exakten Pfad zum vorinstallierten sdkmanager
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;33.0.0" "platform-tools" "platforms;android-33"
 
     - name: Install Buildozer
       run: |
