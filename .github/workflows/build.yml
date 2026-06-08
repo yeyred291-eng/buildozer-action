@@ -23,21 +23,27 @@ jobs:
           pip install --upgrade pip
           pip install "cython<3.0" buildozer
 
-      - name: Force Install Android SDK and SDKmanager
+      - name: Force Install Android SDK into Buildozer Path
         run: |
-          mkdir -p ~/.buildozer/android/platform
-          # Wir laden die offiziellen Google-Tools direkt selbst herunter:
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
-          unzip commandlinetools.zip -d ~/.buildozer/android/platform/cmdline-tools
-          mv ~/.buildozer/android/platform/cmdline-tools/cmdline-tools ~/.buildozer/android/platform/cmdline-tools/latest
+          # Wir erstellen genau den Ordner, den Buildozer sucht und erwartet:
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
           
-          # Hier akzeptieren wir alle Lizenzen vorab, damit aidl installiert werden darf:
-          yes | ~/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk --licenses || true
-          ~/.buildozer/android/platform/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "build-tools;33.0.0" "platforms;android-33" "platform-tools"
+          # Laden die Google-Tools herunter
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
+          unzip commandlinetools.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          
+          # Buildozer braucht die Struktur als "latest" Ordner
+          mv ~/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          
+          # Lizenzen automatisch abknicken
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/home/runner/.buildozer/android/platform/android-sdk --licenses || true
+          
+          # Installiere die wichtigen Werkzeuge direkt an Ort und Stelle
+          ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/home/runner/.buildozer/android/platform/android-sdk "build-tools;33.0.0" "platforms;android-33" "platform-tools"
 
       - name: Build APK with Buildozer
         run: |
-          # Wir fügen den Pfad zu den Android-Tools direkt hinzu, damit Buildozer sie findet
+          # Pfade setzen, damit alles sofort gefunden wird
           export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/platform-tools
           buildozer -v android debug
         env:
