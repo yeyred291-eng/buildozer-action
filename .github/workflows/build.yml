@@ -22,11 +22,6 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install Android SDK Tools (Aidl Fix)
-      run: |
-        # Wir nutzen den exakten Pfad zum vorinstallierten sdkmanager
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;33.0.0" "platform-tools" "platforms;android-33"
-
     - name: Install Buildozer
       run: |
         pip install --upgrade pip
@@ -37,4 +32,5 @@ jobs:
       env:
         BUILDOZER_WARN_ON_ROOT: 0
       run: |
-        buildozer android debug
+        # Wir zwingen Buildozer, das perfekte, vorinstallierte SDK/NDK von GitHub zu nutzen
+        buildozer android debug --android_sdk_path=$ANDROID_HOME --android_ndk_path=$ANDROID_NDK_HOME
