@@ -1,0 +1,16 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build APK using Brian's Action
+        uses: yeyred291-eng/buildozer-action@main
+        with:
+          repository_txt: 'requirements = python3,kivy==2.3.0,kivymd==1.1.1,plyer'
